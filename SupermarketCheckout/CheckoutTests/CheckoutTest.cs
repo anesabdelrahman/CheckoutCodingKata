@@ -6,52 +6,38 @@ namespace CheckoutTests
     [TestFixture]
     public class CheckoutTest
     {
-      [Test]
-        public void WhenScan_A_Once_TotalShouldBe50()
+      Checkout sut;
+
+        [SetUp]
+        public void TestSetUp()
         {
-            // Arrange 
-            var sut = new Checkout();
-
-            //Act
-            sut.Scan("A");
-            var result = sut.GetTotalPrice();
-
-            //Assert
-            Assert.AreEqual(50, result);
-
+            //Arrange
+            sut = new Checkout();
         }
 
         [Test]
-        public void WhenScan_A_Twice_TotalShouldBe100()
+        [Category("Sinle Product Not Exceeding SpecialPrice Quantity!")]
+        [TestCase("A", 1, 50)]
+        [TestCase("A", 2, 100)]
+        [TestCase("A", 3, 130)]
+        [TestCase("B", 1, 30)]
+        [TestCase("B", 2, 45)]
+        [TestCase("C", 1, 20)]
+        [TestCase("D", 1, 15)]
+        public void WhenScanSingleProducts_ItShouldTotalPriceAndAdjustForSpecialPriceDiscount(string sku, int productQuantity, int expectedPrice)
         {
-            // Arrange 
-            var sut = new Checkout();
-
             //Act
-            sut.Scan("A");
-            sut.Scan("A");
+            for (int i = 0; i < productQuantity; i++)
+            {
+                sut.Scan(sku);
+            }
+            
             var result = sut.GetTotalPrice();
 
             //Assert
-            Assert.AreEqual(100, result);
+            Assert.AreEqual(result, expectedPrice);
 
         }
 
-        [Test]
-        public void WhenScan_A_Thrice_TotalShouldBe130()
-        {
-            // Arrange 
-            var sut = new Checkout();
-
-            //Act
-            sut.Scan("A");
-            sut.Scan("A");
-            sut.Scan("A");
-            var result = sut.GetTotalPrice();
-
-            //Assert
-            Assert.AreEqual(130, result);
-
-        }
     }
 }

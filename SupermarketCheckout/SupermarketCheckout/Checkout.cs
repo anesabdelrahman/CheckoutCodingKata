@@ -1,40 +1,40 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SupermarketCheckout
 {
     public class Checkout : ICheckout
     {
-        private readonly IList<Product> _products = new List<Product>
-        {
-            new Product {Sku = "A", Price = 50, SpecialPrice = new SpecialPrice {Price = 130, Quantity = 3} },
-            new Product {Sku = "B", Price = 30, SpecialPrice = new SpecialPrice {Price = 45, Quantity = 2} },
-            new Product {Sku = "C", Price = 20},
-            new Product {Sku = "D", Price = 15},
-        };
-
-        private readonly IList<Product> _scannedProducts = new List<Product>();
+        public IList<Product> Products = new List<Product>();
+        public IList<Product> ScannedItems = new List<Product>();
 
         private int _totalPrice = 0;
         public void Scan(string sku)
         {
-            var currentProduct = _products.FirstOrDefault(p => p.Sku == sku);
-            _scannedProducts.Add(currentProduct);
+            if (!Products.Any())
+            {
+                Products = ProductRepository.BuildProducts();
+            }
 
-            if (currentProduct?.SpecialPrice != null && _scannedProducts.Count == currentProduct.SpecialPrice.Quantity)
-            {
-                _totalPrice = currentProduct.SpecialPrice.Price;
-            }
-            else
-            {
-                if (currentProduct != null) _totalPrice += currentProduct.Price;
-            }
+            ScannedItems.Add(Products.FirstOrDefault(p => p.Sku == sku));
         }
 
         public int GetTotalPrice()
         {
+            var currentProduct = ScannedItems.Where(i => i.SpecialPrice != null).GroupBy(x => x.Sku);
+
+            foreach (var item in ScannedItems)
+            {
+                if (item?.SpecialPrice != null && ScannedItems.Count == item.SpecialPrice.Quantity)
+                {
+                    _totalPrice = item.SpecialPrice.Price;
+                }
+                else
+                {
+                    if (item != null) _totalPrice += item.Price;
+                }
+            }
+            
             return _totalPrice;
         }
     }
