@@ -11,7 +11,7 @@ namespace SupermarketCheckout
                 new Product { Sku = "A", Price = 50},
                 new Product { Sku = "B", Price = 30},
                 new Product { Sku = "C", Price = 20},
-                new Product { Sku = "D", Price = 15}
+                new Product { Sku = "D", Price = 15},
             };
 
             return products;

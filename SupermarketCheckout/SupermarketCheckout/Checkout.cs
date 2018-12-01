@@ -8,7 +8,8 @@ namespace SupermarketCheckout
         private IList<Product> _products = new List<Product>();
         private IList<SpecialPrice> _specialPrices = new List<SpecialPrice>();
         private readonly IList<Product> _scannedItems = new List<Product>();
-        private int _totalPrice = 0;
+        private int _totalPrice;
+
         public void Scan(string sku)
         {
             if (!_products.Any())
@@ -21,7 +22,11 @@ namespace SupermarketCheckout
                 _specialPrices = SpecialPriceRepository.LoadSpecialPrices();
             }
 
-            _scannedItems.Add(_products.FirstOrDefault(p => p.Sku == sku));
+            var currentProduct = _products.FirstOrDefault(p => p.Sku == sku);
+            if (currentProduct != null)
+            {
+                _scannedItems.Add(_products.FirstOrDefault(p => p.Sku == sku));
+            }
         }
 
         public int GetTotalPrice()
@@ -41,18 +46,7 @@ namespace SupermarketCheckout
                     }
                     else if (group.Count() > specialPrice.Quantity)
                     {
-                        var discountedGroups = (int)(groupCount / specialPrice.Quantity);
-                        var nonDiscountedPrice = groupCount % specialPrice.Quantity;
-
-                        if (discountedGroups > 0)
-                        {
-                            _totalPrice += discountedGroups * specialPrice.Price;
-                        }
-
-                        _totalPrice += specialPrice.Price;
-                        var firstOrDefault = group.FirstOrDefault();
-                        if (firstOrDefault != null)
-                            _totalPrice += nonDiscountedPrice * firstOrDefault.Price;
+                       _totalPrice += CalculateSpecialPrice(group, specialPrice, groupCount);
                     }
                     else
                     {
@@ -67,6 +61,27 @@ namespace SupermarketCheckout
                 }
             }
             return _totalPrice;
+        }
+
+        private static int CalculateSpecialPrice(IGrouping<string, Product> group, SpecialPrice specialPrice, int groupCount)
+        {
+            var result = 0;
+            var discountedGroups = (int)(groupCount / specialPrice.Quantity);
+            var nonDiscountedPrice = groupCount % specialPrice.Quantity;
+
+            if (discountedGroups > 0)
+            {
+                result += discountedGroups * specialPrice.Price;
+            }
+
+            result += specialPrice.Price;
+
+            if (group.FirstOrDefault() != null)
+            {
+                result += nonDiscountedPrice * group.FirstOrDefault().Price;
+            }
+
+            return result;
         }
     }
 }
