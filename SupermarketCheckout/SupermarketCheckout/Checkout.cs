@@ -21,20 +21,23 @@ namespace SupermarketCheckout
 
         public int GetTotalPrice()
         {
-            var currentProduct = ScannedItems.Where(i => i.SpecialPrice != null).GroupBy(x => x.Sku);
+            var grouppedItems = ScannedItems.Where(i => i.SpecialPrice != null).GroupBy(x => x.Sku);
 
-            foreach (var item in ScannedItems)
+            foreach (var group in grouppedItems)
             {
-                if (item?.SpecialPrice != null && ScannedItems.Count == item.SpecialPrice.Quantity)
+                var groupCount = group.Count() - group.FirstOrDefault().SpecialPrice.Quantity;
+                if (groupCount < 0)
                 {
-                    _totalPrice = item.SpecialPrice.Price;
+                    _totalPrice += group.Sum(g => g.Price);
                 }
                 else
                 {
-                    if (item != null) _totalPrice += item.Price;
+                    _totalPrice += group.FirstOrDefault().SpecialPrice.Price;
+                    _totalPrice += groupCount * group.FirstOrDefault().Price;
                 }
             }
-            
+
+            _totalPrice += ScannedItems.Where(i => i.SpecialPrice == null).Sum(i => i.Price);
             return _totalPrice;
         }
     }
