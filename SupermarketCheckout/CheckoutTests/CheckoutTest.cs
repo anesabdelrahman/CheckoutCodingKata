@@ -50,7 +50,7 @@ namespace CheckoutTests
             var result = sut.GetTotalPrice();
 
             //Assert
-            Assert.AreEqual(100, result);
+            Assert.AreEqual(130, result);
 
         }
     }
