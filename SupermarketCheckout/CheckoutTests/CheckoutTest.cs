@@ -74,7 +74,7 @@ namespace CheckoutTests
         }
 
         [Test]
-        [Category("Product A & B")]
+        [Category("All Products")]
         [TestCase("A", 1, "B", 1, "C", 1, "D", 1, 115)]
         [TestCase("A", 2, "B", 1, "C", 1, "D", 1, 165)]
         [TestCase("A", 3, "B", 1, "C", 1, "D", 1, 195)]
@@ -85,6 +85,8 @@ namespace CheckoutTests
         [TestCase("A", 1, "B", 3, "C", 1, "D", 1, 160)]
         [TestCase("A", 1, "B", 4, "C", 1, "D", 1, 175)]
         [TestCase("A", 1, "B", 5, "C", 1, "D", 1, 205)]
+        [TestCase("A", 7, "B", 6, "C", 2, "D", 2, 515)]
+        [TestCase("A", 20, "B", 40, "C", 35, "D", 66, 3470)]
         public void WhenScan_AllProducts_ItShouldTotalPricesAndAdjustForSpecialPricesDiscounts(string productA, int productAQuantity,
             string productB, int productBQuantity,
             string productC, int productCQuantity,
