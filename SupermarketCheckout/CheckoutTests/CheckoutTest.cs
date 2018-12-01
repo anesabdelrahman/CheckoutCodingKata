@@ -6,13 +6,13 @@ namespace CheckoutTests
     [TestFixture]
     public class CheckoutTest
     {
-      Checkout sut;
+      Checkout _sut;
 
         [SetUp]
         public void TestSetUp()
         {
             //Arrange
-            sut = new Checkout();
+            _sut = new Checkout();
         }
 
         [Test]
@@ -30,12 +30,12 @@ namespace CheckoutTests
         public void WhenScanSingleProducts_ItShouldTotalPriceAndAdjustForSpecialPriceDiscount(string sku, int productQuantity, int expectedPrice)
         {
             //Act
-            for (int i = 0; i < productQuantity; i++)
+            for (var i = 0; i < productQuantity; i++)
             {
-                sut.Scan(sku);
+                _sut.Scan(sku);
             }
             
-            var result = sut.GetTotalPrice();
+            var result = _sut.GetTotalPrice();
 
             //Assert
             Assert.AreEqual(result, expectedPrice);
@@ -57,22 +57,65 @@ namespace CheckoutTests
         public void WhenScan_A_and_B_ItShouldTotalPricesAndAdjustForSpecialPricesDiscounts(string productA, int productAQuantity, string productB, int productBQuantity, int expectedPrice)
         {
             //Act
-            for (int i = 0; i < productAQuantity; i++)
+            for (var i = 0; i < productAQuantity; i++)
             {
-                sut.Scan(productA);
+                _sut.Scan(productA);
             }
 
-            for (int i = 0; i < productBQuantity; i++)
+            for (var i = 0; i < productBQuantity; i++)
             {
-                sut.Scan(productB);
+                _sut.Scan(productB);
             }
 
-            var result = sut.GetTotalPrice();
+            var result = _sut.GetTotalPrice();
 
             //Assert
             Assert.AreEqual(result, expectedPrice);
-
         }
 
+        [Test]
+        [Category("Product A & B")]
+        [TestCase("A", 1, "B", 1, "C", 1, "D", 1, 115)]
+        [TestCase("A", 2, "B", 1, "C", 1, "D", 1, 165)]
+        [TestCase("A", 3, "B", 1, "C", 1, "D", 1, 195)]
+        [TestCase("A", 4, "B", 1, "C", 1, "D", 1, 245)]
+        [TestCase("A", 5, "B", 1, "C", 1, "D", 1, 295)]
+        [TestCase("A", 6, "B", 1, "C", 1, "D", 1, 325)]
+        [TestCase("A", 1, "B", 2, "C", 1, "D", 1, 130)]
+        [TestCase("A", 1, "B", 3, "C", 1, "D", 1, 160)]
+        [TestCase("A", 1, "B", 4, "C", 1, "D", 1, 175)]
+        [TestCase("A", 1, "B", 5, "C", 1, "D", 1, 205)]
+        public void WhenScan_AllProducts_ItShouldTotalPricesAndAdjustForSpecialPricesDiscounts(string productA, int productAQuantity,
+            string productB, int productBQuantity,
+            string productC, int productCQuantity,
+            string productD, int productDQuantity,
+            int expectedPrice)
+        {
+            //Act
+            for (var i = 0; i < productAQuantity; i++)
+            {
+                _sut.Scan(productA);
+            }
+
+            for (var i = 0; i < productBQuantity; i++)
+            {
+                _sut.Scan(productB);
+            }
+
+            for (var i = 0; i < productCQuantity; i++)
+            {
+                _sut.Scan(productC);
+            }
+
+            for (var i = 0; i < productDQuantity; i++)
+            {
+                _sut.Scan(productD);
+            }
+
+            var result = _sut.GetTotalPrice();
+
+            //Assert
+            Assert.AreEqual(result, expectedPrice);
+        }
     }
 }
