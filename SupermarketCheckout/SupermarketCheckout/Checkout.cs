@@ -4,14 +4,18 @@ namespace SupermarketCheckout
 {
     public class Checkout : ICheckout
     {
-        public void Scan(string item)
+        private int _totalPrice = 0;
+        public void Scan(string sku)
         {
-            throw new NotImplementedException();
+            if (sku == "A")
+            {
+                _totalPrice = 50;
+            }
         }
 
         public int GetTotalPrice()
         {
-            throw new NotImplementedException();
+            return _totalPrice;
         }
     }
 }
