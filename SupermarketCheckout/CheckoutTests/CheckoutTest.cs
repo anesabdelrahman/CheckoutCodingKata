@@ -1,6 +1,6 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SupermarketCheckout;
+using Moq;
 
 namespace CheckoutTests
 {
@@ -13,7 +13,8 @@ namespace CheckoutTests
         public void TestSetUp()
         {
             //Arrange
-            _sut = new Checkout();
+            var calculatorMock = new Mock<Calculator>();
+            _sut = new Checkout(calculatorMock.Object);
         }
 
         [Test]

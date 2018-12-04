@@ -9,6 +9,12 @@ namespace SupermarketCheckout
         private IList<SpecialPrice> _specialPrices = new List<SpecialPrice>();
         private readonly IList<Product> _scannedItems = new List<Product>();
         private int _totalPrice;
+        private readonly ICalculator _calculator;
+
+        public Checkout(ICalculator calculator)
+        {
+            _calculator = calculator;
+        }
 
         public void Scan(string sku)
         {
@@ -38,50 +44,14 @@ namespace SupermarketCheckout
                 var specialPrice = _specialPrices.FirstOrDefault(sp => sp.SkuId == group.Key);
                 if (specialPrice != null)
                 {
-                    var groupCount = group.Count() - specialPrice.Quantity;
-
-                    if (groupCount < 0)
-                    {
-                        _totalPrice += group.Sum(g => g.Price);
-                    }
-                    else if (group.Count() > specialPrice.Quantity)
-                    {
-                       _totalPrice += CalculateSpecialPrice(group, specialPrice, groupCount);
-                    }
-                    else
-                    {
-                        _totalPrice += specialPrice.Price;
-                        var firstOrDefault = group.FirstOrDefault();
-                        if (firstOrDefault != null) _totalPrice += groupCount * firstOrDefault.Price;
-                    }
+                        _totalPrice += _calculator.CalculateSpecialPrice(specialPrice, group);
                 }
                 else
                 {
-                    _totalPrice += _scannedItems.Where(si => si.Sku == group.Key).Sum(i => i.Price);
+                    _totalPrice += _calculator.CalculateStandardPrice(group, _scannedItems);
                 }
             }
             return _totalPrice;
-        }
-
-        private static int CalculateSpecialPrice(IGrouping<string, Product> group, SpecialPrice specialPrice, int groupCount)
-        {
-            var result = 0;
-            var discountedGroups = (int)(groupCount / specialPrice.Quantity);
-            var nonDiscountedPrice = groupCount % specialPrice.Quantity;
-
-            if (discountedGroups > 0)
-            {
-                result += discountedGroups * specialPrice.Price;
-            }
-
-            result += specialPrice.Price;
-
-            if (group.FirstOrDefault() != null)
-            {
-                result += nonDiscountedPrice * group.FirstOrDefault().Price;
-            }
-
-            return result;
         }
     }
 }
