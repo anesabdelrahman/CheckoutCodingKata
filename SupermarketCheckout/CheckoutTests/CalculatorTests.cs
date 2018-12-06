@@ -6,10 +6,11 @@ using SupermarketCheckout;
 namespace CheckoutTests
 {
     [TestFixture]
-    [Category("Calculator Tests")]
+    [Category("Calculators Tests")]
     public class CalculatorTests
     {
         private ICalculator _sut;
+
 
         [SetUp]
         public void SetUp()
@@ -48,6 +49,22 @@ namespace CheckoutTests
             Assert.AreEqual(80, result);
         }
 
+        [Test]
+        [Category("Addig Bags Tests")]
+        [TestCase(1, 5)]
+        [TestCase(3, 5)]
+        [TestCase(6, 10)]
+        [TestCase(10, 10)]
+        [TestCase(11, 15)]
+        [TestCase(26, 30)]
+        public void When_Buying_Items_It_Should_Add_One_Bag_Per_5_Items(int numberOfItems, int expectedCostOfBags)
+        {
+            var sut = new Checkout();
+            var result = sut.GetCostOfBags(numberOfItems);
+
+            Assert.AreEqual(result, expectedCostOfBags);
+        }
+        #region Private Methods
         private IList<Product> GetProduct()
         {
             var products = new List<Product>()
@@ -71,6 +88,7 @@ namespace CheckoutTests
 
             return specialPrices;
         }
+        #endregion Private Methods
 
 
     }

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SupermarketCheckout
 {
-    public class Checkout : ICheckout
+    public class Checkout : ICheckout, IBagCostCalculator
     {
         private IList<Product> _products = new List<Product>();
         private IList<SpecialPrice> _specialPrices = new List<SpecialPrice>();
@@ -15,6 +15,8 @@ namespace SupermarketCheckout
         {
             _calculator = calculator;
         }
+
+        public Checkout() { }
 
         public void Scan(string sku)
         {
@@ -52,6 +54,24 @@ namespace SupermarketCheckout
                 }
             }
             return _totalPrice;
+        }
+
+        public int GetCostOfBags(int numberOfItems)
+        {
+            var costOfBags = 0;
+            var numberOfBags = numberOfItems / 5;
+            numberOfBags += numberOfItems % 5;
+
+            if (numberOfItems <= 5)
+            {
+                costOfBags += 5;
+            }
+            else
+            {
+                costOfBags = numberOfBags * 5;
+            }
+
+            return costOfBags;
         }
     }
 }

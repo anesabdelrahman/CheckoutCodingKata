@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Calculator.cs" />
     <Compile Include="Checkout.cs" />
+    <Compile Include="IBagCostCalculator.cs" />
     <Compile Include="ICalculator.cs" />
     <Compile Include="ICheckout.cs" />
     <Compile Include="Product.cs" />
